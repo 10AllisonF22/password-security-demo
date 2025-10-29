@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Security Educational Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1000px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            color: #856404;
+            text-align: center;
+        }
+        
+        .demo-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        
+        .section-title {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .password-input-wrapper {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 5px 10px;
+        }
+        
+        .toggle-password:hover {
+            color: #5568d3;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .strength-meter {
+            margin-top: 15px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .strength-bar-container {
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .strength-bar {
+            height: 100%;
+            transition: all 0.3s;
+            border-radius: 5px;
+        }
+        
+        .strength-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .info-item {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .info-label {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            color: #333;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .attack-log {
+            background: #1e1e1e;
+            color: #0f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 350px;
+            overflow-y: auto;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .attack-log.active {
+            display: block;
+        }
+        
+        .log-line {
+            margin-bottom: 5px;
+            line-height: 1.5;
+        }
+        
+        .success {
+            color: #0f0;
+            font-weight: bold;
+        }
+        
+        .error {
+            color: #f00;
+        }
+        
+        .warning-log {
+            color: #ff0;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        .users-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .user-item {
+            background: white;
+            padding: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .user-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .user-item.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .password-strength {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+        
+        .weak {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .medium {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .strong {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .very-strong {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .custom-test {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .custom-test h2 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .custom-test input {
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .strength-label {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .feedback-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feedback-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .feedback-item {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: start;
+            gap: 10px;
+        }
+
+        .feedback-item.positive {
+            background: #e8f5e9;
+            border-left: 3px solid #2e7d32;
+        }
+
+        .feedback-item.negative {
+            background: #ffebee;
+            border-left: 3px solid #c62828;
+        }
+
+        .feedback-item.warning {
+            background: #fff3e0;
+            border-left: 3px solid #ef6c00;
+        }
+
+        .feedback-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .feedback-text {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Password Security Educational Demo</h1>
+        
+        <div class="warning">
+            ⚠️ <strong>Educational Purpose Only</strong> - This demo simulates password cracking for learning. Never attempt unauthorized access to real systems.
+        </div>
+
+        <!-- Custom Password Testing Section -->
+        <div class="custom-test">
+            <h2>🧪 Test Your Own Password</h2>
+            <div class="form-group">
+                <label>Enter a password to test its strength:</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="customPassword" placeholder="Type any password here...">
+                    <button class="toggle-password" onclick="togglePasswordVisibility()">Show</button>
+                </div>
+            </div>
+            <button class="btn" onclick="analyzeCustomPassword()">Analyze Password Strength</button>
+        </div>
+
+        <!-- Strength Analysis Results -->
+        <div class="strength-meter" id="strengthMeter" style="display: none;">
+            <div class="strength-label" id="strengthLabel">Password Strength: Unknown</div>
+            <div class="strength-bar-container">
+                <div class="strength-bar" id="strengthBar"></div>
+            </div>
+            <div class="strength-info">
+                <div class="info-item">
+                    <div class="info-label">Length</div>
+                    <div class="info-value" id="lengthValue">0 characters</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Estimated Crack Time</div>
+                    <div class="info-value" id="crackTimeValue">Unknown</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Character Types</div>
+                    <div class="info-value" id="charTypesValue">None</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Entropy (bits)</div>
+                    <div class="info-value" id="entropyValue">0</div>
+                </div>
+            </div>
+            <div class="feedback-section" id="feedbackSection">
+                <div class="feedback-title">📊 Detailed Analysis</div>
+                <div id="feedbackItems"></div>
+            </div>
+            <button class="btn" style="margin-top: 20px;" onclick="testCustomPasswordAttack()">Simulate Attack on This Password</button>
+        </div>
+        
+        <div class="demo-section">
+            <h2 class="section-title">Pre-loaded Test Users</h2>
+            <p style="margin-bottom: 15px; color: #666;">Click on a user to select them for attack simulation:</p>
+            <div class="users-list">
+                <div class="user-item" data-username="JohnDoe1" data-password="12345">
+                    <div><strong>JohnDoe1</strong></div>
+                    <div style="font-size: 14px; color: #666; margin: 5px 0;">Password: 12345</div>
+                    <span class="password-strength weak">VERY WEAK</span>
+                </div>
+                <div class="user-item" data-username="Alice123" data-password="password">
+                    <div><strong>Alice123</strong></div>
+                    <div style="font-size: 14px; color: #666; margin: 5px 0;">Password: password</div>
+                    <span class="password-strength weak">VERY WEAK</span>
+                </div>
+                <div class="user-item" data-username="BobSmith" data-password="HarryStyles12$">
+                    <div><strong>BobSmith</strong></div>
+                    <div style="font-size: 14px; color: #666; margin: 5px 0;">Password: HarryStyles12$</div>
+                    <span class="password-strength weak">WEAK</span>
+                </div>
+                <div class="user-item" data-username="Admin001" data-password="admin">
+                    <div><strong>Admin001</strong></div>
+                    <div style="font-size: 14px; color: #666; margin: 5px 0;">Password: admin</div>
+                    <span class="password-strength weak">VERY WEAK</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2 class="section-title">Brute Force Attack Simulator</h2>
+            <p style="margin-bottom: 15px; color: #666;">Selected target: <strong id="selectedTarget">None</strong></p>
+            <button class="btn" onclick="startBruteForce()" id="attackBtn">Start Dictionary Attack</button>
+            <button class="btn btn-danger" onclick="stopAttack()">Stop Attack</button>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number" id="attempts">0</div>
+                    <div class="stat-label">Attempts</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="speed">0</div>
+                    <div class="stat-label">Attempts/sec</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="time">0s</div>
+                    <div class="stat-label">Time Elapsed</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="status">Ready</div>
+                    <div class="stat-label">Status</div>
+                </div>
+            </div>
+            
+            <div class="attack-log" id="attackLog"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Simulated user database
+        const users = {
+            'JohnDoe1': '12345',
+            'Alice123': 'password',
+            'BobSmith': 'HarryStyles12$',
+            'Admin001': 'admin'
+        };
+        
+        // Extended common password dictionary
+        const commonPasswords = [
+            '123456', 'password', '12345678', 'qwerty', '123456789',
+            '12345', '1234', '111111', '1234567', 'dragon',
+            'admin', 'welcome', 'monkey', 'login', 'abc123',
+            'starwars', 'sunshine', 'master', 'password1', 'letmein',
+            'hello', 'freedom', 'whatever', 'trustno1', 'batman',
+            'passw0rd', 'iloveyou', '1234567890', 'welcome1', 'admin123',
+            'root', 'toor', 'pass123', 'test123', 'guest'
+        ];
+
+        // Common words that make passwords weak
+        const commonWords = [
+            'password', 'admin', 'user', 'login', 'welcome', 'hello', 
+            'test', 'guest', 'pass', 'root', 'master', 'qwerty'
+        ];
+
+        // Celebrity names and popular culture references
+        const celebrityNames = [
+            'harry', 'styles', 'taylor', 'swift', 'justin', 'bieber',
+            'beyonce', 'madonna', 'rihanna', 'drake', 'kanye', 'west',
+            'ariana', 'grande', 'selena', 'gomez', 'lebron', 'james',
+            'ronaldo', 'messi', 'kardashian', 'jenner', 'trump', 'biden',
+            'elon', 'musk', 'oprah', 'brady', 'swift', 'obama'
+        ];
+
+        // Common name patterns
+        const commonNames = [
+            'john', 'james', 'michael', 'david', 'robert', 'william',
+            'mary', 'patricia', 'jennifer', 'linda', 'elizabeth', 'susan',
+            'sarah', 'emily', 'daniel', 'matthew', 'andrew', 'joshua',
+            'chris', 'alex', 'sam', 'jessica', 'ashley', 'amanda'
+        ];
+        
+        let attackInterval;
+        let attemptCount = 0;
+        let startTime;
+        let targetUser = null;
+        let targetPassword = null;
+        let customPasswordMode = false;
+        
+        function togglePasswordVisibility() {
+            const input = document.getElementById('customPassword');
+            const btn = event.target;
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                btn.textContent = 'Show';
+            }
+        }
+        
+        function calculatePasswordStrength(password) {
+            let strength = 0;
+            let feedback = {
+                positive: [],
+                negative: [],
+                warnings: []
+            };
+
+            const lowerPass = password.toLowerCase();
+
+            // Check for common passwords first
+            if (commonPasswords.includes(lowerPass)) {
+                feedback.negative.push('This is one of the most commonly used passwords - it will be cracked instantly!');
+                return { strength: 0, feedback };
+            }
+
+            // Check for celebrity names
+            for (let celebrity of celebrityNames) {
+                if (lowerPass.includes(celebrity)) {
+                    feedback.negative.push(`Contains celebrity name "${celebrity}" - attackers commonly try these in their dictionaries`);
+                    strength -= 2;
+                    break;
+                }
+            }
+
+            // Check for common names
+            for (let name of commonNames) {
+                if (lowerPass.includes(name) && password.length < 16) {
+                    feedback.warnings.push(`Contains common name "${name}" - this makes it easier to guess`);
+                    strength -= 1;
+                    break;
+                }
+            }
+
+            // Check for common words
+            for (let word of commonWords) {
+                if (lowerPass.includes(word)) {
+                    feedback.negative.push(`Contains common word "${word}" - avoid dictionary words`);
+                    strength -= 1;
+                    break;
+                }
+            }
+
+            // Length checks
+            if (password.length < 8) {
+                feedback.negative.push('Password is too short (less than 8 characters)');
+            } else if (password.length >= 8 && password.length < 12) {
+                feedback.warnings.push('Password length is acceptable but could be longer (8-11 characters)');
+                strength += 1;
+            } else if (password.length >= 12 && password.length < 16) {
+                feedback.positive.push('Good password length (12-15 characters)');
+                strength += 2;
+            } else if (password.length >= 16) {
+                feedback.positive.push('Excellent password length (16+ characters)');
+                strength += 3;
+            }
+
+            // Character variety checks
+            const hasLower = /[a-z]/.test(password);
+            const hasUpper = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSymbol = /[^A-Za-z0-9]/.test(password);
+
+            if (hasLower) {
+                feedback.positive.push('Contains lowercase letters');
+                strength += 1;
+            } else {
+                feedback.negative.push('Missing lowercase letters');
+            }
+
+            if (hasUpper) {
+                feedback.positive.push('Contains uppercase letters');
+                strength += 1;
+            } else {
+                feedback.warnings.push('Missing uppercase letters - adds complexity');
+            }
+
+            if (hasNumber) {
+                feedback.positive.push('Contains numbers');
+                strength += 1;
+            } else {
+                feedback.warnings.push('Missing numbers - consider adding some');
+            }
+
+            if (hasSymbol) {
+                feedback.positive.push('Contains special characters (!@#$%^&*)');
+                strength += 1;
+            } else {
+                feedback.warnings.push('Missing special characters - these significantly increase security');
+            }
+
+            // Check for sequential patterns
+            if (/012|123|234|345|456|567|678|789|890/.test(password)) {
+                feedback.negative.push('Contains sequential numbers (e.g., 123, 456) - easily guessable');
+                strength -= 1;
+            }
+
+            if (/abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz/i.test(password)) {
+                feedback.negative.push('Contains sequential letters (e.g., abc, xyz) - easily guessable');
+                strength -= 1;
+            }
+
+            // Check for repeated characters
+            if (/(.)\1{2,}/.test(password)) {
+                feedback.warnings.push('Contains repeated characters (e.g., aaa, 111) - reduces complexity');
+                strength -= 1;
+            }
+
+            // Check for keyboard patterns
+            if (/qwerty|asdfgh|zxcvbn/i.test(password)) {
+                feedback.negative.push('Contains keyboard pattern (e.g., qwerty) - very common in attacks');
+                strength -= 2;
+            }
+
+            // Check if it's only numbers
+            if (/^\d+$/.test(password)) {
+                feedback.negative.push('Password contains only numbers - much easier to crack');
+                strength -= 2;
+            }
+
+            // Bonus for good practices
+            const charTypes = [hasLower, hasUpper, hasNumber, hasSymbol].filter(Boolean).length;
+            if (charTypes === 4 && password.length >= 12) {
+                feedback.positive.push('Excellent variety of character types combined with good length!');
+                strength += 1;
+            }
+
+            return { strength: Math.max(0, strength), feedback };
+        }
+        
+        function calculateEntropy(password) {
+            let charsetSize = 0;
+            if (/[a-z]/.test(password)) charsetSize += 26;
+            if (/[A-Z]/.test(password)) charsetSize += 26;
+            if (/[0-9]/.test(password)) charsetSize += 10;
+            if (/[^A-Za-z0-9]/.test(password)) charsetSize += 32;
+            
+            return Math.log2(Math.pow(charsetSize, password.length));
+        }
+        
+        function estimateCrackTime(password) {
+            const entropy = calculateEntropy(password);
+            const attemptsPerSecond = 1000000000; // 1 billion attempts per second (modern GPU)
+            
+            const totalCombinations = Math.pow(2, entropy);
+            const seconds = totalCombinations / (2 * attemptsPerSecond); // Average case
+            
+            if (seconds < 1) return 'Instant';
+            if (seconds < 60) return `${Math.round(seconds)} seconds`;
+            if (seconds < 3600) return `${Math.round(seconds / 60)} minutes`;
+            if (seconds < 86400) return `${Math.round(seconds / 3600)} hours`;
+            if (seconds < 31536000) return `${Math.round(seconds / 86400)} days`;
+            if (seconds < 31536000 * 100) return `${Math.round(seconds / 31536000)} years`;
+            return 'Centuries';
+        }
+        
+        function getCharacterTypes(password) {
+            const types = [];
+            if (/[a-z]/.test(password)) types.push('lowercase');
+            if (/[A-Z]/.test(password)) types.push('uppercase');
+            if (/[0-9]/.test(password)) types.push('numbers');
+            if (/[^A-Za-z0-9]/.test(password)) types.push('symbols');
+            return types.join(', ') || 'none';
+        }
+        
+        function analyzeCustomPassword() {
+            const password = document.getElementById('customPassword').value;
+            
+            if (!password) {
+                alert('Please enter a password to analyze');
+                return;
+            }
+            
+            const { strength, feedback } = calculatePasswordStrength(password);
+            const meter = document.getElementById('strengthMeter');
+            const bar = document.getElementById('strengthBar');
+            const label = document.getElementById('strengthLabel');
+            
+            meter.style.display = 'block';
+            
+            // Update strength bar
+            const percentage = Math.min((strength / 8) * 100, 100);
+            bar.style.width = percentage + '%';
+            
+            let strengthText = '';
+            let color = '';
+            
+            if (strength <= 2) {
+                strengthText = 'Very Weak';
+                color = '#c62828';
+            } else if (strength <= 4) {
+                strengthText = 'Weak';
+                color = '#ef6c00';
+            } else if (strength <= 6) {
+                strengthText = 'Medium';
+                color = '#f9a825';
+            } else if (strength <= 8) {
+                strengthText = 'Strong';
+                color = '#2e7d32';
+            } else {
+                strengthText = 'Very Strong';
+                color = '#1565c0';
+            }
+            
+            bar.style.backgroundColor = color;
+            label.textContent = `Password Strength: ${strengthText}`;
+            label.style.color = color;
+            
+            // Update info
+            document.getElementById('lengthValue').textContent = `${password.length} characters`;
+            document.getElementById('crackTimeValue').textContent = estimateCrackTime(password);
+            document.getElementById('charTypesValue').textContent = getCharacterTypes(password);
+            document.getElementById('entropyValue').textContent = Math.round(calculateEntropy(password));
+            
+            // Display detailed feedback
+            const feedbackContainer = document.getElementById('feedbackItems');
+            feedbackContainer.innerHTML = '';
+
+            // Add negative feedback first (most important)
+            feedback.negative.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'feedback-item negative';
+                div.innerHTML = `
+                    <span class="feedback-icon">❌</span>
+                    <span class="feedback-text"><strong>Weakness:</strong> ${item}</span>
+                `;
+                feedbackContainer.appendChild(div);
+            });
+
+            // Add warnings
+            feedback.warnings.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'feedback-item warning';
+                div.innerHTML = `
+                    <span class="feedback-icon">⚠️</span>
+                    <span class="feedback-text"><strong>Suggestion:</strong> ${item}</span>
+                `;
+                feedbackContainer.appendChild(div);
+            });
+
+            // Add positive feedback
+            feedback.positive.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'feedback-item positive';
+                div.innerHTML = `
+                    <span class="feedback-icon">✅</span>
+                    <span class="feedback-text"><strong>Strength:</strong> ${item}</span>
+                `;
+                feedbackContainer.appendChild(div);
+            });
+
+            // Add general recommendations if password is weak
+            if (strength <= 4) {
+                const div = document.createElement('div');
+                div.className = 'feedback-item warning';
+                div.innerHTML = `
+                    <span class="feedback-icon">💡</span>
+                    <span class="feedback-text"><strong>Tip:</strong> Use a passphrase with 4+ random words (e.g., "correct-horse-battery-staple") or a mix of 12+ characters with uppercase, lowercase, numbers, and symbols.</span>
+                `;
+                feedbackContainer.appendChild(div);
+            }
+            
+            // Scroll to results
+            meter.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function testCustomPasswordAttack() {
+            const password = document.getElementById('customPassword').value;
+            if (!password) return;
+            
+            customPasswordMode = true;
+            targetUser = 'CustomUser';
+            targetPassword = password;
+            document.getElementById('selectedTarget').textContent = 'Your Custom Password';
+            
+            // Deselect all user items
+            document.querySelectorAll('.user-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            startBruteForce();
+        }
+        
+        function addLog(message, type = 'normal') {
+            const log = document.getElementById('attackLog');
+            const line = document.createElement('div');
+            line.className = `log-line ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            line.textContent = `[${timestamp}] ${message}`;
+            log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function startBruteForce() {
+            if (attackInterval) return;
+            
+            if (!targetUser || !targetPassword) {
+                alert('Please select a target user or test a custom password first');
+                return;
+            }
+            
+            const log = document.getElementById('attackLog');
+            log.classList.add('active');
+            log.innerHTML = '';
+            
+            attemptCount = 0;
+            startTime = Date.now();
+            document.getElementById('status').textContent = 'Attacking';
+            
+            addLog('🔴 Starting brute force attack...', 'error');
+            addLog(`Target: ${targetUser}`, 'normal');
+            addLog('Method: Dictionary attack with common passwords', 'normal');
+            addLog('Attack vector: Password dictionary + variations', 'normal');
+            addLog('---', 'normal');
+            
+            let passwordIndex = 0;
+            let foundPassword = false;
+            
+            attackInterval = setInterval(() => {
+                if (passwordIndex >= commonPasswords.length) {
+                    if (!foundPassword) {
+                        addLog('', 'normal');
+                        addLog('Dictionary exhausted.', 'warning-log');
+                        addLog('Password not found in common dictionary.', 'warning-log');
+                        addLog('This password would require brute force attack.', 'warning-log');
+                        addLog(`Estimated time for full brute force: ${estimateCrackTime(targetPassword)}`, 'warning-log');
+                    }
+                    stopAttack();
+                    document.getElementById('status').textContent = 'Complete';
+                    return;
+                }
+                
+                const password = commonPasswords[passwordIndex];
+                attemptCount++;
+                
+                // Update stats
+                document.getElementById('attempts').textContent = attemptCount.toLocaleString();
+                const elapsed = (Date.now() - startTime) / 1000;
+                document.getElementById('time').textContent = elapsed.toFixed(1) + 's';
+                document.getElementById('speed').textContent = Math.round(attemptCount / elapsed).toLocaleString();
+                
+                addLog(`Trying: ${password}`, 'normal');
+                
+                // Check if password matches
+                if (targetPassword === password) {
+                    foundPassword = true;
+                    addLog('', 'normal');
+                    addLog('═══════════════════════════════════', 'success');
+                    addLog('🚨 SUCCESS! Password cracked!', 'success');
+                    addLog('═══════════════════════════════════', 'success');
+                    addLog(`Username: ${targetUser}`, 'success');
+                    addLog(`Password: ${password}`, 'success');
+                    addLog(`Time taken: ${elapsed.toFixed(2)} seconds`, 'success');
+                    addLog(`Attempts: ${attemptCount.toLocaleString()}`, 'success');
+                    addLog('', 'success');
+                    addLog('⚠️ This demonstrates why using common passwords is dangerous!', 'warning-log');
+                    stopAttack();
+                    document.getElementById('status').textContent = 'Cracked!';
+                    return;
+                }
+                
+                passwordIndex++;
+            }, 50); // Faster simulation: 20 attempts per second
+        }
+        
+        function stopAttack() {
+            if (attackInterval) {
+                clearInterval(attackInterval);
+                attackInterval = null;
+                if (document.getElementById('status').textContent === 'Attacking') {
+                    document.getElementById('status').textContent = 'Stopped';
+                    addLog('Attack stopped by user.', 'error');
+                }
+            }
+        }
+        
+        // User selection functionality
+        document.querySelectorAll('.user-item').forEach(item => {
+            item.addEventListener('click', function() {
+                customPasswordMode = false;
+                targetUser = this.dataset.username;
+                targetPassword = this.dataset.password;
+                
+                document.getElementById('selectedTarget').textContent = targetUser;
+                
+                document.querySelectorAll('.user-item').forEach(i => i.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                stopAttack();
+                document.getElementById('status').textContent = 'Ready';
+            });
+        });
+    </script>
+</body>
+</html>
